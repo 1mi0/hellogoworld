@@ -59,9 +59,9 @@ func Add(o *NeighbourHood) {
 var headNeighbour *NeighbourHood = nil
 
 func populate() {
-    n1 := NeighbourHood{User{"Ivan Petrov", "Gaikadjiq"}, nil}
-    n2 := NeighbourHood{User{"Georgi Ivanov", "Blyska4"}, &n1}
-    n3 := NeighbourHood{User{"Ivanka Petrova", "Putka"}, &n2}
+    n1 := NeighbourHood{User{"Ivan Petrov", "Bezraboten"}, nil}
+    n2 := NeighbourHood{User{"Georgi Ivanov", "Obsht rabotnik"}, &n1}
+    n3 := NeighbourHood{User{"Ivanka Petrova", "Servitiorka"}, &n2}
 
     headNeighbour = &n3
 }

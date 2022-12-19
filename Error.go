@@ -1,4 +1,4 @@
-    package main
+package main
 
 type Result[T any] interface {
     Get() *T
@@ -10,7 +10,7 @@ type Success[T any] struct {
     result T
 }
 
-func (s *Success[T]) Get() *T {
+func (s Success[T]) Get() *T {
     return &s.result
 }
 
@@ -34,6 +34,6 @@ func (_ Error[T]) HasError() bool {
     return true
 }
 
-func (e *Error[T]) Error() string {
+func (e Error[T]) Error() string {
     return e.error
 }

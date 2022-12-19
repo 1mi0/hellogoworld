@@ -1,8 +1,10 @@
 package main
 
 import (
+	//"fmt"
 	"fmt"
 	"net/http"
+	"strings"
 )
 
 func initializeHttp() {
@@ -18,14 +20,15 @@ func printHandler(w http.ResponseWriter, req *http.Request) {
 }
 
 func addHandler(w http.ResponseWriter, req *http.Request) {
-    ans := parseArguments(req.RequestURI)
-    if (len(ans) == 0) {
-        fmt.Fprintf(w, "Error, could not find the proper arguments: \"%v\"", req.RequestURI)
+    parsedResult := parseArguments(req.RequestURI)
+    if parsedResult.HasError() {
+        fmt.Fprintf(w, "%s", parsedResult.Error())
         return
     }
 
-    name, hasName := ans["name"]
-    occupancy, hasOccupancy := ans["occupancy"]
+    mappedArguments := *parsedResult.Get()
+    name, hasName := mappedArguments["name"]
+    occupancy, hasOccupancy := mappedArguments["occupancy"]
 
     if hasName && hasOccupancy {
         n := &NeighbourHood{User{name, occupancy}, nil}
@@ -37,13 +40,13 @@ func addHandler(w http.ResponseWriter, req *http.Request) {
 }
 
 func deleteHandler(w http.ResponseWriter, req *http.Request) {
-    ans := parseArguments(req.RequestURI)
-    if len(ans) == 0 {
-        fmt.Fprintf(w, "Error, could not find \"name\" argument: %s", req.RequestURI)
+    parsedResult := parseArguments(req.RequestURI)
+    if parsedResult.HasError() {
+        fmt.Fprintf(w, "%s", parsedResult.Error())
         return
     }
 
-    name, hasName := ans["name"]
+    name, hasName := (*parsedResult.Get())["name"]
     if hasName {
         if Remove(name) {
             fmt.Fprintf(w, "You've successfully removed \"%s\" from the list.", name)
@@ -53,4 +56,22 @@ func deleteHandler(w http.ResponseWriter, req *http.Request) {
     } else {
         fmt.Fprintf(w, "Error, could not find \"name\" argument: %s", req.RequestURI)
     }
+}
+
+func parseArguments(URI string) Result[map[string]string] {
+    split := strings.Split(URI, "?")
+    if len(split) < 2 {
+        return Error[map[string]string] { "No arguments passed" }
+    }
+    
+    pairs := strings.Split(split[1], "&")
+    var properlySplitPairs = make(map[string]string, 0)
+
+    for _,element := range pairs {
+        toSplit := strings.ReplaceAll(element, "%20", " ")
+        t := strings.Split(toSplit, "=")
+        properlySplitPairs[t[0]] = t[1]
+    }
+
+    return Success[map[string]string] { properlySplitPairs }
 }
