@@ -1,22 +1,23 @@
 package main
 
 import (
-	//"fmt"
 	"fmt"
 	"net/http"
 	"strings"
 )
 
 func initializeHttp() {
+    srv := &http.Server { Addr: ":8090" }
+
     http.HandleFunc("/print", printHandler)
     http.HandleFunc("/add", addHandler)
     http.HandleFunc("/delete", deleteHandler)
 
-    http.ListenAndServe(":8090", nil)
+    srv.ListenAndServe()
 }
 
 func printHandler(w http.ResponseWriter, req *http.Request) {
-    headNeighbour.Print(w)
+    ll_print(headNeighbour, w)
 }
 
 func addHandler(w http.ResponseWriter, req *http.Request) {
@@ -32,7 +33,7 @@ func addHandler(w http.ResponseWriter, req *http.Request) {
 
     if hasName && hasOccupancy {
         n := &NeighbourHood{User{name, occupancy}, nil}
-        Add(n)
+        ll_add(headNeighbour, n)
         fmt.Fprintf(w, "Successfully added %v", n)
     } else {
         fmt.Fprintf(w, "Error, could not find the proper arguments: \"%v\"", req.RequestURI)
@@ -48,7 +49,7 @@ func deleteHandler(w http.ResponseWriter, req *http.Request) {
 
     name, hasName := (*parsedResult.Get())["name"]
     if hasName {
-        if Remove(name) {
+        if ll_remove(headNeighbour, name) {
             fmt.Fprintf(w, "You've successfully removed \"%s\" from the list.", name)
         } else {
             fmt.Fprintf(w, "Error, could not find anyone in the list with the name: \"%s\"", name)

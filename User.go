@@ -19,26 +19,19 @@ func (n NeighbourHood) String() string {
     return fmt.Sprintf("%v", n.person)
 }
 
-func (n NeighbourHood) Print(w io.Writer) {
-    if n.next != nil {
-        n.next.Print(w)
-    }
-    fmt.Fprintf(w, "%v\n", n.String())
-}
-
 func (n *NeighbourHood) Add(o *NeighbourHood) {
     o.next = n.next
     n.next = o
 }
 
-func Remove(name string) bool {
-    if headNeighbour.person.name == name {
-        headNeighbour = headNeighbour.next
+func ll_remove(head *NeighbourHood, name string) bool {
+    if head.person.name == name {
+        head = head.next
         return true
     }
 
-    priv := headNeighbour
-    next := headNeighbour.next
+    priv := head
+    next := head.next
     for next != nil {
         if next.person.name == name {
             priv.next = next.next
@@ -51,14 +44,21 @@ func Remove(name string) bool {
     return false
 }
 
-func Add(o *NeighbourHood) {
-    o.next = headNeighbour
-    headNeighbour = o
+func ll_add(head *NeighbourHood, o *NeighbourHood) {
+    o.next = head
+    head = o
+}
+
+func ll_print(n *NeighbourHood, w io.Writer) {
+    if n.next != nil {
+        ll_print(n.next, w)
+    }
+    fmt.Fprintf(w, "%v\n", n.String())
 }
 
 var headNeighbour *NeighbourHood = nil
 
-func populate() {
+func ll_populate() {
     n1 := NeighbourHood{User{"Ivan Petrov", "Bezraboten"}, nil}
     n2 := NeighbourHood{User{"Georgi Ivanov", "Obsht rabotnik"}, &n1}
     n3 := NeighbourHood{User{"Ivanka Petrova", "Servitiorka"}, &n2}
