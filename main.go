@@ -1,9 +1,7 @@
 package main
 
 func main() {
-    //ll_populate()
+    ll_populate()
 
-    //initializeHttp()
-    //sql_do_work()
-
+    initializeHttp()
 }
